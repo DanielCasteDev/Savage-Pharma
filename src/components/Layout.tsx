@@ -1,11 +1,22 @@
+import { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useCart } from "../contexts/CartContext";
 // Importamos íconos desde Heroicons
-import { HomeIcon, ShoppingBagIcon, InformationCircleIcon, UserCircleIcon, ArrowLeftOnRectangleIcon } from "@heroicons/react/24/outline";
-import { ShoppingCartIcon } from "@heroicons/react/24/outline";
+import {
+  HomeIcon,
+  ShoppingBagIcon,
+  InformationCircleIcon,
+  UserCircleIcon,
+  ArrowLeftOnRectangleIcon,
+  ShoppingCartIcon,
+} from "@heroicons/react/24/outline";
 
-function Layout({ children }) {
+interface LayoutProps {
+  children: ReactNode; // Define que las props incluyen cualquier elemento React válido como hijos
+}
+
+const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { isLoggedIn, logout } = useAuth();
   const { cart } = useCart();
 
@@ -19,7 +30,7 @@ function Layout({ children }) {
             to="/"
             className="text-3xl font-bold tracking-wide hover:text-gray-600 transition flex items-center"
           >
-            <img src="/logo.png" alt="Logo" className="h-12 mr-2" /> {/* Cambia el nombre del archivo si es necesario */}
+            <img src="/logo.png" alt="Logo" className="h-12 mr-2" />
           </Link>
 
           {/* Desktop Menu */}
@@ -52,6 +63,7 @@ function Layout({ children }) {
               className="flex items-center space-x-2 hover:text-gray-600 transition"
             >
               <ShoppingCartIcon className="w-6 h-6" />
+              <span>({cart.length})</span>
             </Link>
 
             {isLoggedIn ? (
@@ -88,6 +100,6 @@ function Layout({ children }) {
       </footer>
     </div>
   );
-}
+};
 
 export default Layout;

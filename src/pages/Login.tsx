@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast, Toaster } from 'sonner';
 
-function Login() {
-  const [loginEmail, setLoginEmail] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
-  const [registerEmail, setRegisterEmail] = useState('');
-  const [registerPassword, setRegisterPassword] = useState('');
-  const [showModal, setShowModal] = useState(false);
+const Login: React.FC = () => {
+  const [loginEmail, setLoginEmail] = useState<string>('');
+  const [loginPassword, setLoginPassword] = useState<string>('');
+  const [registerEmail, setRegisterEmail] = useState<string>('');
+  const [registerPassword, setRegisterPassword] = useState<string>('');
+  const [showModal, setShowModal] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const api = axios.create({
@@ -16,28 +16,28 @@ function Login() {
     timeout: 10000,
   });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     if (loginEmail && loginPassword) {
       try {
-        const response = await api.post('/login', { email: loginEmail, password: loginPassword });
+        const response = await api.post<{ token: string }>('/login', { email: loginEmail, password: loginPassword });
         localStorage.setItem('token', response.data.token); // Guardar el token
         toast.success('Inicio de sesión exitoso.');
         navigate('/products');
-      } catch (error) {
+      } catch (error: any) {
         toast.error(error.response?.data.message || 'Error al iniciar sesión');
       }
     }
   };
 
-  const handleRegister = async (e) => {
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     if (registerEmail && registerPassword) {
       try {
         await api.post('/register', { email: registerEmail, password: registerPassword });
         toast.success('Registro exitoso. Ahora puedes iniciar sesión.');
         setShowModal(false);
-      } catch (error) {
+      } catch (error: any) {
         toast.error(error.response?.data.message || 'Error al registrarse');
       }
     }
