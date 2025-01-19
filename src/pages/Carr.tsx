@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { useCart } from '../contexts/CartContext';
 import { toast, Toaster } from 'sonner';
 import { FaPaypal } from 'react-icons/fa'; // Importa el ícono de PayPal
