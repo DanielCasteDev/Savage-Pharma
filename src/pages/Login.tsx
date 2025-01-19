@@ -12,7 +12,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
 
   const api = axios.create({
-    baseURL: 'http://localhost:4000/api/auth', // Cambia esto por la URL de tu API
+    baseURL: 'http://localhost:4000/api/auth', 
     timeout: 10000,
   });
 
@@ -21,7 +21,7 @@ const Login: React.FC = () => {
     if (loginEmail && loginPassword) {
       try {
         const response = await api.post<{ token: string }>('/login', { email: loginEmail, password: loginPassword });
-        localStorage.setItem('token', response.data.token); // Guardar el token
+        localStorage.setItem('token', response.data.token); 
         toast.success('Inicio de sesión exitoso.');
         navigate('/products');
       } catch (error: any) {

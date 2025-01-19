@@ -1,8 +1,8 @@
+import { useState } from "react";
 import { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useCart } from "../contexts/CartContext";
-// Importamos íconos desde Heroicons
 import {
   HomeIcon,
   ShoppingBagIcon,
@@ -10,15 +10,18 @@ import {
   UserCircleIcon,
   ArrowLeftOnRectangleIcon,
   ShoppingCartIcon,
+  Bars3Icon, // Ícono de menú hamburguesa
+  XMarkIcon, // Ícono de cerrar
 } from "@heroicons/react/24/outline";
 
 interface LayoutProps {
-  children: ReactNode; // Define que las props incluyen cualquier elemento React válido como hijos
+  children: ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { isLoggedIn, logout } = useAuth();
   const { cart } = useCart();
+  const [menuOpen, setMenuOpen] = useState(false); // Estado para menú móvil
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-black">
@@ -33,8 +36,24 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <img src="/logo.png" alt="Logo" className="h-12 mr-2" />
           </Link>
 
-          {/* Desktop Menu */}
-          <div className="flex items-center space-x-8">
+          {/* Botón de menú móvil */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="md:hidden flex items-center p-2 focus:outline-none"
+          >
+            {menuOpen ? (
+              <XMarkIcon className="w-6 h-6" />
+            ) : (
+              <Bars3Icon className="w-6 h-6" />
+            )}
+          </button>
+
+          {/* Menú */}
+          <div
+            className={`${
+              menuOpen ? "block" : "hidden"
+            } md:flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-8`}
+          >
             <Link
               to="/"
               className="flex items-center space-x-2 hover:underline underline-offset-4 hover:text-gray-600 transition"
@@ -67,15 +86,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </Link>
 
             {isLoggedIn ? (
-              <>
-                <button
-                  onClick={logout}
-                  className="flex items-center space-x-2 bg-gray-200 px-4 py-2 rounded-full hover:bg-gray-300 transition"
-                >
-                  <ArrowLeftOnRectangleIcon className="w-5 h-5" />
-                  <span>Logout</span>
-                </button>
-              </>
+              <button
+                onClick={logout}
+                className="flex items-center space-x-2 bg-gray-200 px-4 py-2 rounded-full hover:bg-gray-300 transition"
+              >
+                <ArrowLeftOnRectangleIcon className="w-5 h-5" />
+                <span>Logout</span>
+              </button>
             ) : (
               <Link
                 to="/login"
