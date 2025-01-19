@@ -78,7 +78,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
             {/* Carrito de compras */}
             <Link
-              to="/cart"
+              to="/carr"
               className="flex items-center space-x-2 hover:text-gray-600 transition"
             >
               <ShoppingCartIcon className="w-6 h-6" />

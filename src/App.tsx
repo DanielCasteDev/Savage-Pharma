@@ -6,11 +6,14 @@ import Home from './pages/Home';
 import Products from './pages/Products';
 import AboutUs from './pages/AboutUs';
 import Login from './pages/Login';
+import Car from './pages/Carr';
+
 
 function App() {
   return (
+    <CartProvider>
+
     <AuthProvider>
-      <CartProvider>
         <Router>
           <Layout>
             <Routes>
@@ -18,11 +21,13 @@ function App() {
               <Route path="/products" element={<Products />} />
               <Route path="/about" element={<AboutUs />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/carr" element={<Car />} />
             </Routes>
           </Layout>
         </Router>
-      </CartProvider>
     </AuthProvider>
+    </CartProvider>
+
   );
 }
 
