@@ -13,7 +13,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
 
   const api = axios.create({
-    baseURL: 'http://localhost:4000/api/auth', // Asegúrate de usar HTTP en desarrollo
+    baseURL: 'https://backend-savage.onrender.com/api/auth', // Asegúrate de usar HTTP en desarrollo
     timeout: 10000,
   });
 
