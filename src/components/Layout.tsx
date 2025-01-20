@@ -75,7 +75,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             className="text-2xl font-semibold flex items-center space-x-2 hover:text-gray-600"
           >
             <img src="/logo.png" alt="Logo" className="h-10" />
-            <span>SavagePharma</span>
           </Link>
 
           {/* Botón de menú móvil */}
