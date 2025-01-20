@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast, Toaster } from 'sonner';
@@ -17,6 +17,14 @@ const Login: React.FC = () => {
     timeout: 10000,
   });
 
+  // Verificar si ya hay un token en el localStorage
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/products'); // Redirige a la página de productos si ya está logueado
+    }
+  }, [navigate]);
+
   const validateEmail = (email: string): boolean => /\S+@\S+\.\S+/.test(email); // Valida el formato del correo
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
@@ -34,10 +42,12 @@ const Login: React.FC = () => {
 
     setLoading(true);
     try {
-      const response = await api.post<{ token: string }>('/login', { email: loginEmail, password: loginPassword });
+      const response = await api.post<{ token: string, email: string }>('/login', { email: loginEmail, password: loginPassword });
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('email', response.data.email);
+      // Guardar el token en localStorage
       toast.success('Inicio de sesión exitoso.');
-      navigate('/products');
+      navigate('/products'); // Redirigir a la página de productos
     } catch (error: any) {
       if (error.response) {
         toast.error(error.response.data.message || 'Error en la solicitud.');

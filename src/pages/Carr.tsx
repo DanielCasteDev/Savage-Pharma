@@ -1,11 +1,10 @@
-import  { useState } from 'react';
-import { useCart } from '../contexts/CartContext';
-import { toast, Toaster } from 'sonner';
-import { FaPaypal } from 'react-icons/fa'; // Importa el ícono de PayPal
+import { useState } from "react";
+import { useCart } from "../contexts/CartContext";
+import { toast, Toaster } from "sonner";
 
 const Cart = () => {
   const { cart, removeFromCart } = useCart();
-  const [paymentMethod, setPaymentMethod] = useState('paypal');
+  const [loading, setLoading] = useState(false);
 
   if (cart.length === 0) {
     return (
@@ -15,18 +14,50 @@ const Cart = () => {
     );
   }
 
-  // Calcular el total del carrito
-  const total = cart.reduce((acc, product) => acc + product.price, 0).toFixed(2);
+  // Calcular el total del carrito considerando la cantidad de cada producto
+  const total = cart
+    .reduce((acc, product) => acc + product.price * product.quantity, 0)
+    .toFixed(2);
 
-  // Función para mostrar notificación cuando un producto se elimina
+  // Función para eliminar un producto
   const handleRemove = (productId: number) => {
     removeFromCart(productId);
     toast.error("Producto eliminado del carrito");
   };
 
-  // Función para mostrar notificación cuando se procede al pago
-  const handleCheckout = () => {
-    toast.success(`Pago con ${paymentMethod} confirmado!`);
+  // Función para proceder al pago con Mercado Pago
+  const handleCheckout = async () => {
+    setLoading(true);
+
+    try {
+      const response = await fetch("https://paypal-m2a1.onrender.com/api/payment/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          items: cart.map((product) => ({
+            title: product.name,
+            quantity: product.quantity, // Usar la cantidad real
+            unit_price: product.price,
+          })),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Redirigir al checkout de Mercado Pago
+        window.location.href = data.init_point;
+      } else {
+        toast.error("Hubo un problema al procesar el pago.");
+      }
+    } catch (error) {
+      console.error("Error en el checkout:", error);
+      toast.error("Hubo un problema al procesar el pago.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -36,7 +67,10 @@ const Cart = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {cart.map((product) => (
-            <div key={product.id} className="border p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <div
+              key={product.id}
+              className="border p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
+            >
               <div className="w-full h-48 mb-4 flex justify-center items-center">
                 <img
                   src={product.image}
@@ -46,7 +80,10 @@ const Cart = () => {
               </div>
               <h2 className="text-xl font-semibold text-gray-900">{product.name}</h2>
               <p className="text-gray-600">${product.price.toFixed(2)}</p>
-              <p className="text-gray-500 text-sm mb-4">{product.description}</p>
+              <p className="text-gray-500 text-sm mb-2">Cantidad: {product.quantity}</p>
+              <p className="text-gray-700 text-sm mb-4">
+                Subtotal: ${(product.price * product.quantity).toFixed(2)}
+              </p>
               <button
                 onClick={() => handleRemove(product.id)}
                 className="bg-red-500 text-white py-2 px-4 rounded-full hover:bg-red-600 transition duration-300"
@@ -65,36 +102,32 @@ const Cart = () => {
             <span className="text-xl font-semibold text-gray-900">${total}</span>
           </div>
 
-          {/* Método de pago */}
-          <div className="mt-4">
-            <label htmlFor="payment-method" className="block text-gray-700 text-lg font-semibold mb-2">
-              Método de pago
-            </label>
-            <select
-              id="payment-method"
-              value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md"
-            >
-              <option value="paypal">
-                <FaPaypal className="inline-block mr-2" /> PayPal
-              </option>
-            </select>
-          </div>
+         {/* Botón de checkout */}
+<div className="mt-6">
+  <button
+    className="w-full py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition duration-300 flex items-center justify-center"
+    onClick={handleCheckout}
+    disabled={loading}
+  >
+    {loading ? (
+      <span>Procesando...</span>
+    ) : (
+      <>
+        <img
+          src="https://www.paypalobjects.com/webstatic/icon/pp258.png" // URL del logo de PayPal
+          alt="PayPal Logo"
+          className="h-6 mr-2"
+        />
+        Proceder al Pago con PayPal
+      </>
+    )}
+  </button>
+</div>
 
-          {/* Botón de checkout */}
-          <div className="mt-6">
-            <button
-              className="w-full py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition duration-300"
-              onClick={handleCheckout}
-            >
-              Proceder al Pago
-            </button>
-          </div>
         </div>
       </div>
 
-      {/* Agregar ToastContainer para mostrar notificaciones */}
+      {/* Agregar Toaster para notificaciones */}
       <Toaster />
     </div>
   );
